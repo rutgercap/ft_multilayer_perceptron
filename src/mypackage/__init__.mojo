@@ -1,1 +1,0 @@
-from .mymodule import print_hello_world
