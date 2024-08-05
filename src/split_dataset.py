@@ -1,5 +1,4 @@
 from pathlib import Path
-from sys import argv
 from dataset import dataset_from_path
 
 

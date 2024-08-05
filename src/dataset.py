@@ -15,6 +15,7 @@ def dataset_from_path(path: Path) -> pd.DataFrame:
     df.columns = columns
     return df
 
+
 def normalize_data(df: pd.DataFrame) -> pd.DataFrame:
     num_cols = df.select_dtypes(include=['int64', 'float64']).columns
     scaler = RobustScaler()
