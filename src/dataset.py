@@ -1,6 +1,7 @@
 from pathlib import Path
+
 import pandas as pd
-from sklearn.preprocessing import RobustScaler 
+from sklearn.preprocessing import RobustScaler
 
 
 def dataset_from_path(path: Path) -> pd.DataFrame:
@@ -17,7 +18,7 @@ def dataset_from_path(path: Path) -> pd.DataFrame:
 
 
 def normalize_data(df: pd.DataFrame) -> pd.DataFrame:
-    num_cols = df.select_dtypes(include=['int64', 'float64']).columns
+    num_cols = df.select_dtypes(include=["int64", "float64"]).columns
     scaler = RobustScaler()
     df[num_cols] = scaler.fit_transform(df[num_cols])
     return df
