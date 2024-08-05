@@ -1,6 +1,15 @@
+from pathlib import Path
+
+import pytest
 from pytest import fixture, raises
 
-from src.network import HiddenLayer, MultiLayerPerceptron, Perceptron, SoftmaxLayer
+from src.network import (
+    HiddenLayer,
+    MultiLayerPerceptron,
+    Neuron,
+    Perceptron,
+    SoftmaxLayer,
+)
 
 
 @fixture
@@ -106,3 +115,74 @@ def test_softmax_returns_correct_output() -> None:
     result = layer.forward([1, 1])
 
     assert result == [0.5, 0.5]
+
+
+def test_softmax_works_with_more_complicated_input() -> None:
+    layer = SoftmaxLayer()
+
+    result = layer.forward([1, 2, 3])
+
+    assert [round(x, 5) for x in result] == [
+        round(x, 5)
+        for x in [0.09003057317038046, 0.24472847105479764, 0.6652409557748219]
+    ]
+
+
+def test_hidden_layer_forward_raises_error_if_not_initialized() -> None:
+    layer = HiddenLayer(size=1)
+
+    with raises(ValueError):
+        layer.forward([1, 1])
+
+
+def test_hidden_layer_works_with_neurons() -> None:
+    layer = HiddenLayer.from_neurons(
+        [Neuron([0.0, 0.0], 0.0), Neuron([0.0, 0.0], 1.0), Neuron([1.0, 1.0], 0.0)]
+    )
+
+    result = layer.forward([1, 1])
+
+    assert result == [0, 1, 2]
+
+
+def test_can_create_network_with_premade_neurons() -> None:
+    layer = HiddenLayer.from_neurons(
+        [Neuron([0.0, 0.0], 0.0), Neuron([0.0, 0.0], 1.0), Neuron([1.0, 1.0], 0.0)]
+    )
+    output_layer = SoftmaxLayer()
+    network = MultiLayerPerceptron(
+        input_size=2, hidden_layers=[layer], output_layer=output_layer
+    )
+
+    result = network.predict([1, 1])
+
+    assert [round(x, 5) for x in result] == [
+        round(x, 5)
+        for x in [0.09003057317038046, 0.24472847105479764, 0.6652409557748219]
+    ]
+
+
+@pytest.mark.skip(reason="not implemented yet")
+def test_network_to_file_works(tmpdir: Path) -> None:
+    layer = HiddenLayer(size=2)
+    output_layer = SoftmaxLayer()
+    network = MultiLayerPerceptron(
+        input_size=2, hidden_layers=[layer], output_layer=output_layer
+    )
+    network.initialize()
+
+    p: Path = tmpdir.mkdir("sub").join("hello.txt")  # type: ignore
+    network.to_file(p)
+
+    assert p.exists()
+
+    new = MultiLayerPerceptron.from_file(p)
+
+    assert new.input_size == 2
+    assert len(new.hidden_layers) == 1
+    assert isinstance(new.output_layer, SoftmaxLayer)
+    for a, b in zip(network.hidden_layers, new.hidden_layers):
+        assert a.size == b.size
+        for a_n, b_n in zip(a._neurons, b._neurons):
+            assert a_n.weights == b_n.weights
+            assert a_n.bias == b_n.bias
