@@ -1,6 +1,7 @@
 from pytest import fixture, raises
 
-from src.network import MultiLayerPerceptron, Perceptron, HiddenLayer, SoftmaxLayer
+from src.network import HiddenLayer, MultiLayerPerceptron, Perceptron, SoftmaxLayer
+
 
 @fixture
 def perceptron() -> Perceptron:
@@ -26,7 +27,7 @@ def test_perceptron_raises_error_if_input_does_not_match_weights() -> None:
     bias = 0
     perceptron = Perceptron(weights, bias)
 
-    with raises(ValueError): 
+    with raises(ValueError):
         perceptron.predict(inputs)
 
 
@@ -62,6 +63,7 @@ def test_perceptron_returns_true_if_high_bias() -> None:
 
     assert result == True
 
+
 def test_perceptron_returns_false_if_low_bias() -> None:
     inputs = [0, 0]
     weights = [0, 0]
@@ -74,11 +76,33 @@ def test_perceptron_returns_false_if_low_bias() -> None:
 
 
 def test_can_create_network() -> None:
-    layer = HiddenLayer(size=1)
-    output_layer = SoftmaxLayer(size=2)
-    network = MultiLayerPerceptron(input_size=1, hidden_layers=[layer], output_layer=output_layer)
+    layer = HiddenLayer(size=2)
+    output_layer = SoftmaxLayer()
+    network = MultiLayerPerceptron(
+        input_size=2, hidden_layers=[layer], output_layer=output_layer
+    )
     network.initialize()
 
-    result = network.predict([1])
+    result = network.predict([1, 2])
 
     assert len(result) == 2
+
+
+def test_network_raises_exception_if_incorrect_input_given() -> None:
+    layer = HiddenLayer(size=1)
+    output_layer = SoftmaxLayer()
+    network = MultiLayerPerceptron(
+        input_size=1, hidden_layers=[layer], output_layer=output_layer
+    )
+    network.initialize()
+
+    with raises(ValueError):
+        network.predict([1, 1])
+
+
+def test_softmax_returns_correct_output() -> None:
+    layer = SoftmaxLayer()
+
+    result = layer.forward([1, 1])
+
+    assert result == [0.5, 0.5]
