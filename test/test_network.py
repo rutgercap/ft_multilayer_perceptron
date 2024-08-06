@@ -160,29 +160,3 @@ def test_can_create_network_with_premade_neurons() -> None:
         round(x, 5)
         for x in [0.09003057317038046, 0.24472847105479764, 0.6652409557748219]
     ]
-
-
-@pytest.mark.skip(reason="not implemented yet")
-def test_network_to_file_works(tmpdir: Path) -> None:
-    layer = HiddenLayer(size=2)
-    output_layer = SoftmaxLayer()
-    network = MultiLayerPerceptron(
-        input_size=2, hidden_layers=[layer], output_layer=output_layer
-    )
-    network.initialize()
-
-    p: Path = tmpdir.mkdir("sub").join("hello.txt")  # type: ignore
-    network.to_file(p)
-
-    assert p.exists()
-
-    new = MultiLayerPerceptron.from_file(p)
-
-    assert new.input_size == 2
-    assert len(new.hidden_layers) == 1
-    assert isinstance(new.output_layer, SoftmaxLayer)
-    for a, b in zip(network.hidden_layers, new.hidden_layers):
-        assert a.size == b.size
-        for a_n, b_n in zip(a._neurons, b._neurons):
-            assert a_n.weights == b_n.weights
-            assert a_n.bias == b_n.bias
