@@ -1,6 +1,3 @@
-from pathlib import Path
-
-import pytest
 from pytest import fixture, raises
 
 from src.network import (
