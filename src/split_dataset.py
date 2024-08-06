@@ -1,17 +1,19 @@
 from pathlib import Path
 
 from dataset import dataset_from_path
+from pandas import DataFrame
 
 
-def split(path: Path) -> None:
-    df = dataset_from_path(path)
+def split(df: DataFrame) -> tuple[DataFrame, DataFrame]:
     test_size = int(len(df) * 0.2)
     test, train = df.iloc[:test_size], df.iloc[test_size:]
-    train.to_csv("train.csv", index=False)
-    test.to_csv("test.csv", index=False)
+    return test, train
 
 
 if __name__ == "__main__":
     print("Splitting data set...")
-    split(Path("data.csv"))
+    df = dataset_from_path(Path("data.csv"))
+    test, train = split(df)
+    train.to_csv("train.csv", index=False)
+    test.to_csv("test.csv", index=False)
     print("Data set split successfully.")

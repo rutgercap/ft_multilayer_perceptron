@@ -550,6 +550,21 @@ test = ["hypothesis (>=6.46.1)", "pytest (>=7.3.2)", "pytest-xdist (>=2.2.0)"]
 xml = ["lxml (>=4.9.2)"]
 
 [[package]]
+name = "pandas-stubs"
+version = "2.2.2.240805"
+description = "Type annotations for pandas"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "pandas_stubs-2.2.2.240805-py3-none-any.whl", hash = "sha256:6413687e85851c7962e99f4d629ed86d0a3d91d4bd5fec269c8d871b30552172"},
+    {file = "pandas_stubs-2.2.2.240805.tar.gz", hash = "sha256:881a1a642a1fb8ec3b3787e036b0650d2bf0953f4e0ad1907eea164dc671ecee"},
+]
+
+[package.dependencies]
+numpy = {version = ">=2.0.0", markers = "python_version >= \"3.12\" and python_version < \"3.13\""}
+types-pytz = ">=2022.1.1"
+
+[[package]]
 name = "pillow"
 version = "10.4.0"
 description = "Python Imaging Library (Fork)"
@@ -1038,6 +1053,17 @@ files = [
 ]
 
 [[package]]
+name = "types-pytz"
+version = "2024.1.0.20240417"
+description = "Typing stubs for pytz"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "types-pytz-2024.1.0.20240417.tar.gz", hash = "sha256:6810c8a1f68f21fdf0f4f374a432487c77645a0ac0b31de4bf4690cf21ad3981"},
+    {file = "types_pytz-2024.1.0.20240417-py3-none-any.whl", hash = "sha256:8335d443310e2db7b74e007414e74c4f53b67452c0cb0d228ca359ccfba59659"},
+]
+
+[[package]]
 name = "tzdata"
 version = "2024.1"
 description = "Provider of IANA time zone data"
@@ -1071,4 +1097,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "f15567c701092f0c8ab1e0df7098dc290fa64e7cf33e3593c2b04e5edbac765d"
+content-hash = "a4b3953a99b9571dd8737bff2a2d1a5c8b96751a12c881f4eeae1a9d8dc0b5b1"

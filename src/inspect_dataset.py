@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import seaborn as sns
+import seaborn as sns # type: ignore
 
 from dataset import dataset_from_path, normalize_data
 

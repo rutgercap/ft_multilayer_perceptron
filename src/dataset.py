@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pandas as pd
-from sklearn.preprocessing import RobustScaler
+from sklearn.preprocessing import RobustScaler # type: ignore
 
 
 def dataset_from_path(path: Path) -> pd.DataFrame:
@@ -13,7 +13,7 @@ def dataset_from_path(path: Path) -> pd.DataFrame:
     columns[1] = "diagnosis"
     for i in range(2, len(columns)):
         columns[i] = f"feature_{i - 2}"
-    df.columns = columns
+    df.columns = columns # type: ignore
     return df
 
 
@@ -22,3 +22,4 @@ def normalize_data(df: pd.DataFrame) -> pd.DataFrame:
     scaler = RobustScaler()
     df[num_cols] = scaler.fit_transform(df[num_cols])
     return df
+

@@ -1,7 +1,7 @@
 import math
 from typing import Sequence
 
-from numpy import dot
+from numpy import dot, ndarray, array
 from numpy.random import random
 
 
@@ -37,7 +37,7 @@ class Neuron:
         self.weights = weights
         self.bias = bias
 
-    def predict(self, inputs: Sequence[float]) -> float:
+    def predict(self, inputs: ndarray) -> float:
         value = dot(self.weights, inputs) + self.bias
         return value
 
@@ -58,10 +58,10 @@ class HiddenLayer:
         layer.size = len(neurons)
         return layer
 
-    def forward(self, inputs: Sequence[float]) -> Sequence[float]:
+    def forward(self, inputs: ndarray) -> ndarray:
         if len(self._neurons) == 0:
             raise ValueError("Neurons uninitialized")
-        return [neuron.predict(inputs) for neuron in self._neurons]
+        return array([neuron.predict(inputs) for neuron in self._neurons])
 
     def initialize(self, input_size: int):
         for _ in range(self.size):
@@ -71,10 +71,10 @@ class HiddenLayer:
 
 
 class SoftmaxLayer:
-    def forward(self, inputs: Sequence[float]) -> Sequence[float]:
+    def forward(self, inputs: ndarray) -> ndarray:
         values = [math.exp(x) for x in inputs]
         values_sum = sum(values)
-        return [x / values_sum for x in values]
+        return array([x / values_sum for x in values])
 
 
 class MultiLayerPerceptron:
@@ -100,8 +100,11 @@ class MultiLayerPerceptron:
             layer.initialize(input_size)
             input_size = layer.size
 
-    def predict(self, inputs: Sequence[float]) -> Sequence[float]:
+    def predict(self, inputs: ndarray) -> ndarray:
         outputs = inputs
         for layer in self.hidden_layers:
             outputs = layer.forward(outputs)
         return self.output_layer.forward(outputs)
+
+    def fit(self, X: ndarray, y: ndarray) -> None:
+        result = self.predict(X)
