@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from numpy import ndarray
 import pandas as pd
 from sklearn.preprocessing import RobustScaler # type: ignore
 
@@ -23,3 +24,10 @@ def normalize_data(df: pd.DataFrame) -> pd.DataFrame:
     df[num_cols] = scaler.fit_transform(df[num_cols])
     return df
 
+
+def dataframe_to_numpy(df: pd.DataFrame, target: str, index: bool = False) -> tuple[ndarray, ndarray]:
+    if index:
+        df = df.reset_index(drop=True)
+    X = df.drop(columns=[target]).to_numpy()
+    y = df[target].to_numpy()
+    return X, y
