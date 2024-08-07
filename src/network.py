@@ -23,6 +23,7 @@ def binary_cross_entropy(y_true: ndarray, y_pred: ndarray):
 class HiddenLayer:
     def __init__(self, input_size: int, hidden_size: int):
         self.weights = np.random.randn(input_size, hidden_size)
+        print(self.weights)
         self.biases = np.zeros((1, hidden_size))
 
     def forward(self, X: ndarray):
@@ -46,8 +47,12 @@ class MLP:
         self.output_layer = HiddenLayer(previous_layer_size, output_size)
 
 
-    def forward(self, X: ndarray):
-        raise NotImplementedError()
+    def forward(self, X: ndarray) -> ndarray:
+        if X.shape[0] != self.input_size:
+            raise ValueError("Input size is incorrect")
+        for layer in self.layers:
+            X = layer.forward(X)
+        return self.output_layer.forward(X)[0]
 
     def backward(self, X: ndarray, y: ndarray, learning_rate: float):
         raise NotImplementedError()
