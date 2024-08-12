@@ -43,6 +43,10 @@ class HiddenLayer:
         self.output = self.activate(self.z)
         return self.output
 
+    def predict(self, X: ndarray):
+        z = np.dot(X, self.weights) + self.biases
+        return self.activate(z)
+
     def activate(self, z: np.ndarray) -> np.ndarray:
         return np.maximum(0, z)
 
@@ -113,6 +117,11 @@ class MLP:
             X = layer.forward(X)
         return self.output_layer.forward(X)
 
+    def predict(self, X: ndarray) -> ndarray:
+        for layer in self.layers:
+            X = layer.predict(X)
+        return self.output_layer.predict(X)
+
     def backward(self, X: ndarray, y: ndarray, learning_rate: float):
         hidden_output = X
         for layer in self.layers:
@@ -136,14 +145,15 @@ class MLP:
             training_output = self.forward(X)
             training_loss = binary_cross_entropy(y, training_output)
             loss_history.append(training_loss)
-            # if validation_data:
-            #     X_val, y_val = validation_data
-            #     val_output = self.forward(X_val)
-            #     # val_loss = binary_cross_entropy(y_val, val_output)
-            #     val_loss = 1
-            #     if not silent:
-            #         print(f"Epoch {i + 1} / {epochs}, Loss: {training_loss:.4f}, Val Loss: {val_loss:.4f}")
-            if not silent:
+            if validation_data:
+                X_val, y_val = validation_data
+                val_output = self.predict(X_val)
+                val_loss = binary_cross_entropy(y_val, val_output)
+                if not silent:
+                    print(
+                        f"Epoch {i + 1} / {epochs}, Loss: {training_loss:.4f}, Val Loss: {val_loss:.4f}"
+                    )
+            elif not silent:
                 print(f"Epoch {i + 1} / {epochs}, Loss: {training_loss:.4f}")
             self.backward(X, y, learning_rate)
         return loss_history

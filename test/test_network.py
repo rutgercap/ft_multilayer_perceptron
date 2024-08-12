@@ -97,3 +97,13 @@ def test_can_save_weights_to_file(tmpdir: Path) -> None:
     assert network.output_layer.weights.tolist() == other.output_layer.weights.tolist()
     assert network.layers[0].biases.tolist() == other.layers[0].biases.tolist()
     assert network.layers[1].biases.tolist() == other.layers[1].biases.tolist()
+
+
+def test_predict_and_forward_give_similar_results() -> None:
+    network = MLP(input_size=2, hidden_layer_sizes=[3, 4], output_size=2)
+    X = array([[1, 2], [3, 4], [5, 6]])
+
+    forward_result = network.forward(X)
+    predict_result = network.predict(X)
+
+    assert numpy.allclose(forward_result, predict_result)
