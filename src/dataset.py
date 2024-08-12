@@ -29,7 +29,7 @@ def dataframe_to_numpy(
     df: pd.DataFrame, target: str, index: bool = False
 ) -> tuple[ndarray, ndarray]:
     if index:
-        df = df.reset_index(drop=True)
+        df.drop(columns=["index"], inplace=True)
     X = df.drop(columns=[target]).to_numpy()
     y = df[target].to_numpy()
     return X, y
