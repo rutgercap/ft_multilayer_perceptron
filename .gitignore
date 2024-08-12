@@ -2,3 +2,4 @@ test.csv
 train.csv
 **/__pycache__/
 my_plot.pdf
+model.pkl
