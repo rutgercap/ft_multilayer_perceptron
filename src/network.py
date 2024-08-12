@@ -1,3 +1,5 @@
+import json
+from pathlib import Path
 from typing import Sequence
 
 import numpy as np
@@ -28,6 +30,12 @@ class HiddenLayer:
     def __init__(self, input_size: int, output_size: int):
         self.weights = np.random.randn(input_size, output_size)
         self.biases = np.zeros((1, output_size))
+
+    def weights_json(self):
+        return {
+            "weights": self.weights.tolist(),
+            "biases": self.biases.tolist(),
+        }
 
     def forward(self, X: ndarray):
         self.inputs = X
@@ -119,3 +127,20 @@ class MLP:
             loss = binary_cross_entropy(y, output)
             print(f"Epoch {i + 1}, Loss: {loss:.4f}")
             self.backward(X, y, learning_rate)
+
+    def save(self, path: Path) -> None:
+        weights = {
+            f"hidden_layer_{i}": layer.weights_json()
+            for i, layer in enumerate(self.layers)
+        }
+        weights["output_layer"] = self.output_layer.weights_json()
+        json.dump(weights, open(path, "w"))
+
+    def load(self, path: Path) -> None:
+        with open(path) as f:
+            json_layers = json.load(f)
+            for i, layer in enumerate(self.layers):
+                layer.weights = np.array(json_layers[f"hidden_layer_{i}"]["weights"])
+                layer.biases = np.array(json_layers[f"hidden_layer_{i}"]["biases"])
+            self.output_layer.weights = np.array(json_layers["output_layer"]["weights"])
+            self.output_layer.biases = np.array(json_layers["output_layer"]["biases"])
