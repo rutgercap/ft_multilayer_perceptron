@@ -1,7 +1,8 @@
 from pathlib import Path
 
-from dataset import dataset_from_path
 from pandas import DataFrame
+
+from dataset import dataset_from_path
 
 
 def split(df: DataFrame) -> tuple[DataFrame, DataFrame]:

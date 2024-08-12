@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from numpy import ndarray
 import pandas as pd
-from sklearn.preprocessing import RobustScaler # type: ignore
+from numpy import ndarray
+from sklearn.preprocessing import RobustScaler  # type: ignore
 
 
 def dataset_from_path(path: Path) -> pd.DataFrame:
@@ -14,7 +14,7 @@ def dataset_from_path(path: Path) -> pd.DataFrame:
     columns[1] = "diagnosis"
     for i in range(2, len(columns)):
         columns[i] = f"feature_{i - 2}"
-    df.columns = columns # type: ignore
+    df.columns = columns  # type: ignore
     return df
 
 
@@ -25,7 +25,9 @@ def normalize_data(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def dataframe_to_numpy(df: pd.DataFrame, target: str, index: bool = False) -> tuple[ndarray, ndarray]:
+def dataframe_to_numpy(
+    df: pd.DataFrame, target: str, index: bool = False
+) -> tuple[ndarray, ndarray]:
     if index:
         df = df.reset_index(drop=True)
     X = df.drop(columns=[target]).to_numpy()
