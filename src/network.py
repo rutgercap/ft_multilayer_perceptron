@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Sequence
+from typing import Optional, Sequence
 
 import numpy as np
 from numpy import ndarray
@@ -121,12 +121,32 @@ class MLP:
         for layer in reversed(self.layers):
             output_error = layer.backward(output_error, learning_rate)
 
-    def train(self, X: ndarray, y: ndarray, learning_rate: float, epochs: int):
+    def train(
+        self,
+        data: tuple[ndarray, ndarray],
+        learning_rate: float,
+        epochs: int,
+        silent=False,
+        validation_data: Optional[tuple[ndarray, ndarray]] = None,
+    ) -> Sequence[float]:
+        X, y = data
+
+        loss_history = []
         for i in range(epochs):
-            output = self.forward(X)
-            loss = binary_cross_entropy(y, output)
-            print(f"Epoch {i + 1}, Loss: {loss:.4f}")
+            training_output = self.forward(X)
+            training_loss = binary_cross_entropy(y, training_output)
+            loss_history.append(training_loss)
+            # if validation_data:
+            #     X_val, y_val = validation_data
+            #     val_output = self.forward(X_val)
+            #     # val_loss = binary_cross_entropy(y_val, val_output)
+            #     val_loss = 1
+            #     if not silent:
+            #         print(f"Epoch {i + 1} / {epochs}, Loss: {training_loss:.4f}, Val Loss: {val_loss:.4f}")
+            if not silent:
+                print(f"Epoch {i + 1} / {epochs}, Loss: {training_loss:.4f}")
             self.backward(X, y, learning_rate)
+        return loss_history
 
     def save(self, path: Path) -> None:
         weights = {
