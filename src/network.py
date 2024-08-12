@@ -30,11 +30,11 @@ class HiddenLayer:
         self.biases = np.zeros((1, output_size))
 
     def forward(self, X: ndarray):
-        self.inputs = X 
+        self.inputs = X
         self.z = np.dot(X, self.weights) + self.biases
         self.output = self.activate(self.z)
         return self.output
-    
+
     def activate(self, z: np.ndarray) -> np.ndarray:
         return np.maximum(0, z)
 
@@ -63,15 +63,14 @@ class HiddenLayer:
         return input_error
 
 
-class OutputLayer(HiddenLayer):
+class SoftmaxLayer(HiddenLayer):
     def activate(self, z: np.ndarray) -> np.ndarray:
-        # Assuming a classification task with softmax output
         exp_z = np.exp(z - np.max(z, axis=1, keepdims=True))  # For numerical stability
         output = exp_z / np.sum(exp_z, axis=1, keepdims=True)
-        rounded_output = np.round(output, decimals=4)  
+        rounded_output = np.round(output, decimals=4)
         return rounded_output
 
-    def backward_output_layer(
+    def backward(
         self, prev_layer_output: ndarray, y: ndarray, learning_rate: float
     ) -> ndarray:
         m = y.shape[0]
@@ -82,6 +81,7 @@ class OutputLayer(HiddenLayer):
         self.biases -= learning_rate * bias_gradient
         self.weights -= learning_rate * weights_gradient
         return np.dot(error, self.weights.T)
+
 
 class MLP:
     input_size: int
@@ -98,7 +98,7 @@ class MLP:
             layers.append(HiddenLayer(previous_layer_size, layer))
             previous_layer_size = layer
         self.layers = layers
-        self.output_layer = OutputLayer(previous_layer_size, output_size)
+        self.output_layer = SoftmaxLayer(previous_layer_size, output_size)
 
     def forward(self, X: ndarray) -> ndarray:
         for layer in self.layers:
@@ -106,15 +106,10 @@ class MLP:
         return self.output_layer.forward(X)
 
     def backward(self, X: ndarray, y: ndarray, learning_rate: float):
-        # Forward pass to get the output from the last hidden layer
         hidden_output = X
         for layer in self.layers:
             hidden_output = layer.forward(hidden_output)
-
-        # Pass the output from the last hidden layer to the output layer's backward method
-        output_error = self.output_layer.backward_output_layer(hidden_output, y, learning_rate)
-
-        # Backpropagate through the hidden layers
+        output_error = self.output_layer.backward(hidden_output, y, learning_rate)
         for layer in reversed(self.layers):
             output_error = layer.backward(output_error, learning_rate)
 

@@ -47,8 +47,7 @@ def test_can_train_network() -> None:
     learning_rate = 0.1
     epochs = 10
 
-    result = network.forward([1,2])
+    result = network.forward([1, 2])
     network.train(X, y, learning_rate, epochs)
-
 
     assert len(result[0]) == output_size
