@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from numpy import array
 import numpy
+from numpy import array
 from pytest import raises
 
 from src.network import MLP
@@ -54,18 +54,34 @@ def test_can_train_network() -> None:
     network.train((X, y), learning_rate, epochs, silent=True)
 
     assert len(result[0]) == output_size
-    assert numpy.allclose(network.layers[0].weights, [[ 1.76406309,  0.40028914,  0.98080656], [ 2.24091469,  1.8678221,  -0.97267574]])
-    assert numpy.allclose(network.layers[0].biases, [[1.07477400e-05 ,1.32180141e-04, 2.53356336e-03]])
-    assert numpy.allclose(network.layers[1].weights, [[ 0.95200566, -0.16091427, -0.04345054,  0.4922834 ],
-                                                     [ 0.14531307,  1.44792475,  0.80124633,  0.1760041 ],
-                                                     [ 0.44386323,  0.33367433,  1.49407907, -0.20515826]])
-    assert numpy.allclose(network.layers[1].biases, [[ 0.00030703, -0.00156479,  0.01062937,  0.01348533]])
-    assert numpy.allclose(network.output_layer.weights,  [[-0.19132369, -0.34970435],
-                                                         [-2.89479723,  0.99542601],
-                                                         [ 0.59534248, -0.47307131],
-                                                         [ 1.9199237,  -1.10453475]])
+    assert numpy.allclose(
+        network.layers[0].weights,
+        [[1.76406309, 0.40028914, 0.98080656], [2.24091469, 1.8678221, -0.97267574]],
+    )
+    assert numpy.allclose(
+        network.layers[0].biases, [[1.07477400e-05, 1.32180141e-04, 2.53356336e-03]]
+    )
+    assert numpy.allclose(
+        network.layers[1].weights,
+        [
+            [0.95200566, -0.16091427, -0.04345054, 0.4922834],
+            [0.14531307, 1.44792475, 0.80124633, 0.1760041],
+            [0.44386323, 0.33367433, 1.49407907, -0.20515826],
+        ],
+    )
+    assert numpy.allclose(
+        network.layers[1].biases, [[0.00030703, -0.00156479, 0.01062937, 0.01348533]]
+    )
+    assert numpy.allclose(
+        network.output_layer.weights,
+        [
+            [-0.19132369, -0.34970435],
+            [-2.89479723, 0.99542601],
+            [0.59534248, -0.47307131],
+            [1.9199237, -1.10453475],
+        ],
+    )
     assert numpy.allclose(network.output_layer.biases, [[-0.03446333, 0.03446333]])
-
 
 
 def test_can_save_weights_to_file(tmpdir: Path) -> None:
