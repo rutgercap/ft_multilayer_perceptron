@@ -3,3 +3,7 @@ train.csv
 **/__pycache__/
 my_plot.pdf
 model.pkl
+model.json
+.vscode/
+.mypy_cache/
+.pytest_cache/

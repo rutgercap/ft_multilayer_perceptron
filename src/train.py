@@ -26,10 +26,10 @@ if __name__ == "__main__":
     print("Splitting data set...")
     X, y = prep_data(Path("train.csv"))
     X_val, y_val = prep_data(Path("test.csv"))
-    model = MLP(input_size=X.shape[1], hidden_layer_sizes=[24, 24, 24], output_size=2)
+    model = MLP(input_size=X.shape[1], hidden_layer_sizes=[1], output_size=2)
     history = model.train(
         (X, y), learning_rate=0.0001, epochs=10000, validation_data=(X_val, y_val)
     )
     print("Training complete.")
-    model.save("model.pkl")
-    print("Saved weights to model.pkl")
+    model.save("model.json")
+    print("Saved weights to model.json")

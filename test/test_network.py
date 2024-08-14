@@ -85,17 +85,17 @@ def test_can_train_network() -> None:
 
 
 def test_can_save_weights_to_file(tmpdir: Path) -> None:
-    path = Path(f"{tmpdir}/model.pkl")
-    network = MLP(input_size=2, hidden_layer_sizes=[3, 4], output_size=2)
+    path = Path(f"{tmpdir}/model.json")
+    network = MLP(input_size=2, hidden_layer_sizes=[2, 3], output_size=3)
 
     network.save(path)
-    other = MLP(input_size=2, hidden_layer_sizes=[3, 4], output_size=2)
-    other.load(path)
+    other = MLP.from_file(path)
 
-    assert network.layers[0].weights.tolist() == other.layers[0].weights.tolist()
-    assert network.layers[1].weights.tolist() == other.layers[1].weights.tolist()
+    assert network.input_size == other.input_size
     assert network.output_layer.weights.tolist() == other.output_layer.weights.tolist()
+    assert network.layers[0].weights.tolist() == other.layers[0].weights.tolist()
     assert network.layers[0].biases.tolist() == other.layers[0].biases.tolist()
+    assert network.layers[1].weights.tolist() == other.layers[1].weights.tolist()
     assert network.layers[1].biases.tolist() == other.layers[1].biases.tolist()
 
 
