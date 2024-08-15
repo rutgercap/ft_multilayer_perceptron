@@ -1,4 +1,5 @@
 import json
+import time
 from pathlib import Path
 from typing import NamedTuple, Optional, Sequence
 
@@ -22,6 +23,7 @@ def binary_cross_entropy(y_true: ndarray, y_pred: ndarray):
 
 
 class TrainingOverview(NamedTuple):
+    duration: float
     epochs: int
     learning_rate: float
     loss_history: Sequence[float]
@@ -216,19 +218,28 @@ class MLP:
         data: tuple[ndarray, ndarray],
         learning_rate: float,
         epochs: int,
+        batch_size: Optional[int] = None,
         silent=False,
         validation_data: Optional[tuple[ndarray, ndarray]] = None,
     ) -> TrainingOverview:
         X, y = data
 
+        start_time = time.time()
         loss_history = []
         accuracy_history = []
         val_accuracy_history = []
         for i in range(epochs):
-            training_output = self.forward(X)
-            training_loss = float(binary_cross_entropy(y, training_output))
+            if not batch_size:
+                x_batch = X
+                y_batch = y
+            else:
+                indices = np.random.choice(X.shape[0], batch_size, replace=False)
+                x_batch = X[indices]
+                y_batch = y[indices]
+            training_output = self.forward(x_batch)
+            training_loss = float(binary_cross_entropy(y_batch, training_output))
             loss_history.append(training_loss)
-            accuracy_history.append(float(self.accuracy(y, training_output)))
+            accuracy_history.append(float(self.accuracy(y_batch, training_output)))
             if validation_data:
                 X_val, y_val = validation_data
                 val_output = self.predict(X_val)
@@ -240,9 +251,11 @@ class MLP:
                     )
             elif not silent:
                 print(f"Epoch {i + 1} / {epochs}, Loss: {training_loss:.4f}")
-            self.backward(X, y, learning_rate)
+            self.backward(x_batch, y_batch, learning_rate)
+        end_time = time.time()
+        duration = end_time - start_time
         return TrainingOverview(
-            epochs, learning_rate, loss_history, accuracy_history, val_accuracy_history
+            duration, epochs, learning_rate, loss_history, accuracy_history, val_accuracy_history
         )
 
     def save(self, path: Path) -> None:
