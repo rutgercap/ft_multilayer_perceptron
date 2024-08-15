@@ -1,7 +1,8 @@
 import json
 from pathlib import Path
-from typing import Optional, Sequence
+from typing import NamedTuple, Optional, Sequence
 
+import matplotlib.pyplot as plt
 import numpy as np
 from numpy import array, ndarray
 
@@ -19,6 +20,40 @@ def binary_cross_entropy(y_true: ndarray, y_pred: ndarray):
         y_true * np.log(y_pred + 1e-15) + (1 - y_true) * np.log(1 - y_pred + 1e-15)
     )
 
+
+class TrainingOverview(NamedTuple):
+    epochs: int
+    learning_rate: float
+    loss_history: Sequence[float]
+    accuracy_history: Sequence[float]
+    validation_accuracy_history: Optional[Sequence[float]] = None
+
+    def __str__(self):
+        return f"Epochs: {self.epochs}, Learning Rate: {self.learning_rate}, Loss: {self.loss}, Validation Loss: {self.validation_loss}"
+
+    def plot_loss(self):
+        plt.figure(figsize=(8, 6))
+        plt.plot(range(1, self.epochs + 1), self.loss_history, label='Training Loss', color='red')
+        plt.title('Loss Over Epochs')
+        plt.xlabel('Epochs')
+        plt.ylabel('Loss')
+        plt.grid(True)
+        plt.legend()
+        plt.show()
+
+    def plot_accuracy(self):
+        plt.figure(figsize=(8, 6))
+        plt.plot(range(1, self.epochs + 1), self.accuracy_history, label='Training Accuracy', color='green')
+        
+        if self.validation_accuracy_history:
+            plt.plot(range(1, self.epochs + 1), self.validation_accuracy_history, label='Validation Accuracy', color='blue')
+        
+        plt.title('Accuracy Over Epochs')
+        plt.xlabel('Epochs')
+        plt.ylabel('Accuracy')
+        plt.grid(True)
+        plt.legend()
+        plt.show()
 
 class HiddenLayer:
     weights: ndarray
@@ -157,6 +192,9 @@ class MLP:
         for layer in reversed(self.layers):
             output_error = layer.backward(output_error, learning_rate)
 
+    def accuracy(self, y_true: ndarray, y_pred: ndarray) -> float:
+        return np.mean(np.argmax(y_true, axis=1) == np.argmax(y_pred, axis=1))
+
     def train(
         self,
         data: tuple[ndarray, ndarray],
@@ -164,17 +202,21 @@ class MLP:
         epochs: int,
         silent=False,
         validation_data: Optional[tuple[ndarray, ndarray]] = None,
-    ) -> Sequence[float]:
+    ) -> TrainingOverview:
         X, y = data
 
         loss_history = []
+        accuracy_history = []
+        val_accuracy_history = []
         for i in range(epochs):
             training_output = self.forward(X)
-            training_loss = binary_cross_entropy(y, training_output)
+            training_loss = float(binary_cross_entropy(y, training_output))
             loss_history.append(training_loss)
+            accuracy_history.append(float(self.accuracy(y, training_output)))
             if validation_data:
                 X_val, y_val = validation_data
                 val_output = self.predict(X_val)
+                val_accuracy_history.append(float(self.accuracy(y_val, val_output)))
                 val_loss = binary_cross_entropy(y_val, val_output)
                 if not silent:
                     print(
@@ -183,7 +225,9 @@ class MLP:
             elif not silent:
                 print(f"Epoch {i + 1} / {epochs}, Loss: {training_loss:.4f}")
             self.backward(X, y, learning_rate)
-        return loss_history
+        return TrainingOverview(
+            epochs, learning_rate, loss_history, accuracy_history, val_accuracy_history
+        )
 
     def save(self, path: Path) -> None:
         weights = {
