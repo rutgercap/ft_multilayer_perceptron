@@ -3,7 +3,6 @@ from pathlib import Path
 from dataset import prep_data
 from network import MLP
 
-
 if __name__ == "__main__":
     print("Splitting data set...")
     X, y = prep_data(Path("train.csv"))

@@ -33,27 +33,43 @@ class TrainingOverview(NamedTuple):
 
     def plot_loss(self):
         plt.figure(figsize=(8, 6))
-        plt.plot(range(1, self.epochs + 1), self.loss_history, label='Training Loss', color='red')
-        plt.title('Loss Over Epochs')
-        plt.xlabel('Epochs')
-        plt.ylabel('Loss')
+        plt.plot(
+            range(1, self.epochs + 1),
+            self.loss_history,
+            label="Training Loss",
+            color="red",
+        )
+        plt.title("Loss Over Epochs")
+        plt.xlabel("Epochs")
+        plt.ylabel("Loss")
         plt.grid(True)
         plt.legend()
         plt.show()
 
     def plot_accuracy(self):
         plt.figure(figsize=(8, 6))
-        plt.plot(range(1, self.epochs + 1), self.accuracy_history, label='Training Accuracy', color='green')
-        
+        plt.plot(
+            range(1, self.epochs + 1),
+            self.accuracy_history,
+            label="Training Accuracy",
+            color="green",
+        )
+
         if self.validation_accuracy_history:
-            plt.plot(range(1, self.epochs + 1), self.validation_accuracy_history, label='Validation Accuracy', color='blue')
-        
-        plt.title('Accuracy Over Epochs')
-        plt.xlabel('Epochs')
-        plt.ylabel('Accuracy')
+            plt.plot(
+                range(1, self.epochs + 1),
+                self.validation_accuracy_history,
+                label="Validation Accuracy",
+                color="blue",
+            )
+
+        plt.title("Accuracy Over Epochs")
+        plt.xlabel("Epochs")
+        plt.ylabel("Accuracy")
         plt.grid(True)
         plt.legend()
         plt.show()
+
 
 class HiddenLayer:
     weights: ndarray

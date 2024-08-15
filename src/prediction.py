@@ -1,17 +1,19 @@
 from pathlib import Path
 from sys import argv
-from numpy import ndarray, mean, log
 
-from network import MLP
+from numpy import log, mean, ndarray
+
 from dataset import prep_data
+from network import MLP
+
 
 def binary_cross_entropy(y_true: ndarray, y_pred: ndarray):
-    return -mean(
-        y_true * log(y_pred + 1e-15) + (1 - y_true) * log(1 - y_pred + 1e-15)
-    )
+    return -mean(y_true * log(y_pred + 1e-15) + (1 - y_true) * log(1 - y_pred + 1e-15))
+
 
 def accuracy(y_true: ndarray, y_pred: ndarray):
     return mean(y_true == y_pred)
+
 
 def main():
     if len(argv) != 3:
@@ -25,7 +27,6 @@ def main():
     loss = binary_cross_entropy(y, prediction)
     found_accuracy = accuracy(y, prediction)
     print(f"Accuracy: {found_accuracy} | loss: {loss}")
-
 
 
 if __name__ == "__main__":
