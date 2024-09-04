@@ -255,7 +255,12 @@ class MLP:
         end_time = time.time()
         duration = end_time - start_time
         return TrainingOverview(
-            duration, epochs, learning_rate, loss_history, accuracy_history, val_accuracy_history
+            duration,
+            epochs,
+            learning_rate,
+            loss_history,
+            accuracy_history,
+            val_accuracy_history,
         )
 
     def save(self, path: Path) -> None:
